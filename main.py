@@ -655,9 +655,18 @@ Create a prioritized list of action items with:
             
             if choice == '1':
                 console.print("\n[yellow]Note: Free tier allows 1 request per 15 minutes[/yellow]")
-                bookmarks = self.fetcher.fetch_bookmarks()
-                if bookmarks and Confirm.ask("Save bookmarks to file?"):
-                    self.fetcher.save_bookmarks()
+                # Store current bookmarks in case fetch fails
+                current_bookmarks = self.fetcher.bookmarks.copy() if self.fetcher.bookmarks else []
+                new_bookmarks = self.fetcher.fetch_bookmarks()
+                
+                if new_bookmarks:
+                    if Confirm.ask("Save bookmarks to file?"):
+                        self.fetcher.save_bookmarks()
+                else:
+                    # Restore previous bookmarks if fetch failed
+                    if current_bookmarks:
+                        self.fetcher.bookmarks = current_bookmarks
+                        console.print("[dim]Previous bookmarks restored[/dim]")
                     
             elif choice == '2':
                 self.fetcher.load_bookmarks()

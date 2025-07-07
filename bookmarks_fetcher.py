@@ -41,6 +41,7 @@ class BookmarksFetcher:
         
         if pagination_token:
             console.print("[yellow]Continuing from previous pagination token...[/yellow]")
+            console.print("[dim]Tip: Use option 8 to reset pagination if you want to start from the beginning[/dim]")
         
         with Progress(
             SpinnerColumn(),
@@ -115,10 +116,13 @@ class BookmarksFetcher:
                     
                 except Exception as e:
                     console.print(f"[red]Error fetching bookmarks: {str(e)}[/red]")
+                    if "429" in str(e):
+                        console.print("[yellow]Rate limit exceeded. Please wait 15 minutes before trying again.[/yellow]")
                     break
         
         self.bookmarks = all_bookmarks
-        console.print(f"[green]Successfully fetched {len(all_bookmarks)} bookmarks![/green]")
+        if len(all_bookmarks) > 0:
+            console.print(f"[green]Successfully fetched {len(all_bookmarks)} bookmarks![/green]")
         
         return all_bookmarks
     
