@@ -61,10 +61,12 @@ class OpenAIProvider(LLMProvider):
         try:
             # Check if this is an o1/o3 model which uses different parameters
             if self.model.startswith('o1') or self.model.startswith('o3'):
+                print(f"[dim]Note: {self.model} models can take 30-60 seconds to respond...[/dim]")
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
-                    max_completion_tokens=1000
+                    max_completion_tokens=1000,
+                    timeout=120.0  # 2 minute timeout for o3
                 )
             else:
                 # Regular GPT models
@@ -72,7 +74,8 @@ class OpenAIProvider(LLMProvider):
                     model=self.model,
                     messages=messages,
                     temperature=0.7,
-                    max_tokens=1000
+                    max_tokens=1000,
+                    timeout=60.0  # 1 minute timeout
                 )
             
             return LLMResponse(

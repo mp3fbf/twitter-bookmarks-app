@@ -32,6 +32,19 @@ cp .env.example .env
   - `exchange_code_for_token()`: Exchanges auth code for access/refresh tokens
   - `make_api_request()`: Direct API calls with Bearer token (bypasses Tweepy limitations)
 
+### Intelligent Bookmark Analysis (NEW)
+- **bookmark_analyzer.py**: Analyzes bookmarks to extract topics and create knowledge graphs
+- Key features:
+  - Keyword extraction with stop word filtering
+  - Automatic categorization into topics (AI/ML, programming, tools, etc.)
+  - Knowledge graph creation with bookmark relationships
+  - Mermaid diagram export for visualization
+- Key methods:
+  - `analyze_bookmarks()`: Main analysis entry point
+  - `extract_keywords()`: NLP-based keyword extraction
+  - `create_topic_clusters()`: Groups bookmarks by topic
+  - `export_knowledge_graph_mermaid()`: Visualization export
+
 ### Critical Implementation Details
 
 1. **Tweepy Limitation Workaround**: 
@@ -51,7 +64,18 @@ cp .env.example .env
 4. **LLM Provider Factory**:
    - `llm_providers.py` implements factory pattern for multiple LLM providers
    - Each provider inherits from `LLMProvider` abstract base class
-   - Supports OpenAI, Anthropic, and Google Gemini
+   - Supports OpenAI (including o3!), Anthropic, and Google Gemini
+   - Special handling for o1/o3 models (use `max_completion_tokens` instead of `max_tokens`)
+
+5. **Smart Processing System**:
+   - Topic-based processing instead of random bookmark selection
+   - Five processing modes:
+     - Process by specific topic
+     - Generate topic overview
+     - Create learning paths
+     - Compare similar tools
+     - Deep dive analysis
+   - Topic-specific prompts for better LLM results
 
 ## Common Issues & Solutions
 

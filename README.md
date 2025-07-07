@@ -6,17 +6,26 @@ Transform your Twitter bookmarks into actionable knowledge using LLMs.
 
 - 📚 Fetch up to 800 of your most recent Twitter bookmarks
 - 💾 Save and load bookmarks locally
-- 📊 View bookmark statistics
+- 📊 View bookmark statistics and topic analysis
 - 📝 Export bookmarks to Markdown
-- 🤖 Process bookmarks with your choice of LLM:
-  - OpenAI (GPT-3.5/GPT-4)
+- 🧠 **NEW: Intelligent Topic Analysis**
+  - Automatic categorization into topics (AI/ML, Programming, Tools, etc.)
+  - Keyword extraction and frequency analysis
+  - Knowledge graph visualization (Mermaid diagrams)
+  - Find connections between related bookmarks
+- 🤖 **Smart Processing by Topic** with your choice of LLM:
+  - OpenAI (GPT-4, o3 models)
   - Anthropic (Claude)
   - Google Gemini
-- 🎯 Generate:
-  - Summaries
-  - Study guides
-  - Key insights
-  - Action items
+- 🎯 Advanced Processing Modes:
+  - **Topic-specific analysis**: Process bookmarks grouped by subject
+  - **Topic overview**: Get insights across all your interests
+  - **Learning paths**: Create structured study plans from educational content
+  - **Tool comparison**: Compare similar tools and services
+  - **Deep dive analysis**: In-depth exploration of specific topics
+- 🔄 Bookmark management:
+  - Pagination support for fetching all bookmarks
+  - Unbookmark processed tweets to avoid 800 limit
 
 ## Quick Start
 
@@ -61,11 +70,25 @@ python main.py
 
 1. **First Run**: The app will open a browser for Twitter authentication
 2. **Main Menu Options**:
-   - Fetch new bookmarks (limited to 1 request per 15 minutes on free tier)
-   - Load previously saved bookmarks
-   - View statistics about your bookmarks
-   - Export to Markdown for reading
-   - Process with LLM for insights
+   - **Fetch new bookmarks** - Get latest bookmarks (1 request per 15 minutes on free tier)
+   - **Load saved bookmarks** - Load previously fetched bookmarks
+   - **View statistics** - See bookmark counts and basic stats
+   - **Export to Markdown** - Save bookmarks for reading
+   - **Analyze topics** 🆕 - Discover topics, keywords, and connections in your bookmarks
+   - **Smart processing** 🆕 - Process bookmarks intelligently by topic with LLM
+   - **Configure LLM** - Set up your preferred AI provider
+   - **Reset pagination** - Start fetching from the beginning
+   - **Unbookmark tweets** - Remove processed bookmarks from Twitter
+
+### Smart Processing Modes
+
+When you select "Smart processing", you can choose from:
+
+1. **Process by Topic** - Select a specific topic (AI/ML, Programming, etc.) to analyze
+2. **Topic Overview** - Get a comprehensive analysis of all your bookmark topics
+3. **Learning Path** - Generate a structured curriculum from educational bookmarks
+4. **Tool Comparison** - Compare similar tools and services mentioned in bookmarks
+5. **Deep Dive** - In-depth analysis of a topic with related content
 
 ## LLM Configuration
 
@@ -87,12 +110,14 @@ The app supports multiple LLM providers. You can either:
 
 ```
 twitter-bookmarks-app/
-├── main.py              # Main application
+├── main.py              # Main application with smart processing
 ├── twitter_auth.py      # OAuth 2.0 authentication
 ├── bookmarks_fetcher.py # Bookmark fetching and management
-├── llm_providers.py     # Modular LLM providers
+├── bookmark_analyzer.py # Topic analysis and knowledge graphs 🆕
+├── llm_providers.py     # Modular LLM providers (supports o3!)
 ├── requirements.txt     # Python dependencies
 ├── .env.example         # Example environment variables
+├── CLAUDE.md           # Developer documentation
 └── README.md           # This file
 ```
 
