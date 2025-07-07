@@ -1,0 +1,23 @@
+# Twitter API
+tweepy>=4.14.0
+requests-oauthlib>=1.3.1
+
+# LLM Providers (install only what you need)
+openai>=1.0.0
+anthropic>=0.18.0
+google-generativeai>=0.3.0
+
+# Data Storage and Processing
+pandas>=2.0.0
+sqlalchemy>=2.0.0
+python-dotenv>=1.0.0
+
+# Web Framework (for OAuth callback)
+flask>=3.0.0
+
+# Utilities
+rich>=13.0.0  # For better CLI output
+markdown>=3.5.0  # For markdown generation
+beautifulsoup4>=4.12.0  # For parsing HTML in tweets
+lxml>=4.9.0  # For better HTML parsing
+jinja2>=3.1.2  # For template rendering
