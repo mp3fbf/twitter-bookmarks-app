@@ -138,6 +138,9 @@ class BookmarksFetcher:
                         # Process URLs in the bookmark
                         self.link_expander.process_bookmark_urls(bookmark)
                         progress.update(task, advance=1, description=f"Expanded URLs in {i+1}/{len(all_bookmarks)} bookmarks")
+                    except KeyboardInterrupt:
+                        console.print("\n[yellow]URL expansion interrupted by user[/yellow]")
+                        break
                     except Exception as e:
                         console.print(f"[yellow]Error expanding URLs for bookmark {i+1}: {str(e)}[/yellow]")
                         continue

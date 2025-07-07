@@ -693,7 +693,10 @@ Create a prioritized list of action items with:
                 console.print("\n[yellow]Note: Free tier allows 1 request per 15 minutes[/yellow]")
                 # Store current bookmarks in case fetch fails
                 current_bookmarks = self.fetcher.bookmarks.copy() if self.fetcher.bookmarks else []
-                new_bookmarks = self.fetcher.fetch_bookmarks()
+                
+                # Ask about URL expansion
+                expand_urls = Confirm.ask("Expand URLs during fetch?", default=True)
+                new_bookmarks = self.fetcher.fetch_bookmarks(expand_links=expand_urls)
                 
                 if new_bookmarks:
                     if Confirm.ask("Save bookmarks to file?"):

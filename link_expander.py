@@ -43,15 +43,31 @@ class LinkExpander:
         """Extract all URLs from text"""
         # Pattern to match URLs (including t.co)
         url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+(?:[/](?:[-\w._~!$&\'()*+,;=:@]|%[\da-fA-F]{2})*)*(?:\?(?:[-\w._~!$&\'()*+,;=:@/?]|%[\da-fA-F]{2})*)?(?:#(?:[-\w._~!$&\'()*+,;=:@/?]|%[\da-fA-F]{2})*)?'
-        return re.findall(url_pattern, text)
+        urls = re.findall(url_pattern, text)
+        
+        # Filter out Twitter media URLs (photos/videos) as they require authentication
+        filtered_urls = []
+        for url in urls:
+            if 'twitter.com' in url and ('/photo/' in url or '/video/' in url):
+                continue  # Skip Twitter media URLs
+            filtered_urls.append(url)
+        
+        return filtered_urls
     
     def expand_url(self, short_url: str) -> str:
         """Expand a shortened URL to its final destination"""
         try:
+            # Skip Twitter status URLs without media
+            if 'twitter.com' in short_url and '/status/' in short_url and not ('/photo/' in short_url or '/video/' in short_url):
+                return short_url  # Don't try to expand Twitter status URLs
+                
             response = self.session.head(short_url, allow_redirects=True, timeout=self.timeout)
             return response.url
         except requests.exceptions.Timeout:
             console.print(f"[yellow]Timeout expanding URL: {short_url}[/yellow]")
+            return short_url
+        except requests.exceptions.ConnectionError:
+            console.print(f"[yellow]Connection error for URL: {short_url}[/yellow]")
             return short_url
         except Exception as e:
             console.print(f"[yellow]Error expanding URL {short_url}: {str(e)}[/yellow]")
@@ -95,6 +111,12 @@ class LinkExpander:
     def _extract_webpage_metadata(self, url: str, metadata: LinkMetadata) -> None:
         """Extract Open Graph and meta tags from a webpage"""
         try:
+            # Skip problematic URLs
+            if 'twitter.com' in url or 'x.com' in url:
+                metadata.title = "Twitter/X Link"
+                metadata.description = "Link to Twitter/X content"
+                return
+                
             response = self.session.get(url, timeout=self.timeout)
             response.raise_for_status()
             
