@@ -13,6 +13,11 @@ Transform your Twitter bookmarks into actionable knowledge using LLMs.
   - Keyword extraction and frequency analysis
   - Knowledge graph visualization (Mermaid diagrams)
   - Find connections between related bookmarks
+- 🔗 **NEW: Automatic URL Expansion**
+  - Expands t.co shortened links to real URLs
+  - Extracts metadata (title, description, images)
+  - Special handling for GitHub repos, YouTube videos
+  - Rich bookmark exports with actual content
 - 🤖 **Smart Processing by Topic** with your choice of LLM:
   - OpenAI (GPT-4, o3 models)
   - Anthropic (Claude)
@@ -76,6 +81,7 @@ python main.py
    - **Export to Markdown** - Save bookmarks for reading
    - **Analyze topics** 🆕 - Discover topics, keywords, and connections in your bookmarks
    - **Smart processing** 🆕 - Process bookmarks intelligently by topic with LLM
+   - **Expand URLs** 🆕 - Expand t.co links and extract metadata from websites
    - **Configure LLM** - Set up your preferred AI provider
    - **Reset pagination** - Start fetching from the beginning
    - **Unbookmark tweets** - Remove processed bookmarks from Twitter
@@ -114,6 +120,7 @@ twitter-bookmarks-app/
 ├── twitter_auth.py      # OAuth 2.0 authentication
 ├── bookmarks_fetcher.py # Bookmark fetching and management
 ├── bookmark_analyzer.py # Topic analysis and knowledge graphs 🆕
+├── link_expander.py     # URL expansion and metadata extraction 🆕
 ├── llm_providers.py     # Modular LLM providers (supports o3!)
 ├── requirements.txt     # Python dependencies
 ├── .env.example         # Example environment variables

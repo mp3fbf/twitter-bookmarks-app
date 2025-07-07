@@ -577,6 +577,41 @@ Please provide:
         
         return base_prompt
     
+    def expand_bookmark_urls(self):
+        """Expand URLs in already loaded bookmarks"""
+        console.print("\n[bold cyan]Expanding URLs in loaded bookmarks...[/bold cyan]")
+        
+        # Check if bookmarks already have expanded URLs
+        already_expanded = sum(1 for b in self.fetcher.bookmarks if b.get('url_metadata'))
+        if already_expanded > 0:
+            console.print(f"[yellow]{already_expanded} bookmarks already have expanded URLs[/yellow]")
+            if not Confirm.ask("Continue and re-expand all URLs?"):
+                return
+        
+        from rich.progress import Progress, SpinnerColumn, TextColumn
+        
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console
+        ) as progress:
+            task = progress.add_task("Expanding URLs...", total=len(self.fetcher.bookmarks))
+            
+            for i, bookmark in enumerate(self.fetcher.bookmarks):
+                try:
+                    # Process URLs in the bookmark
+                    self.fetcher.link_expander.process_bookmark_urls(bookmark)
+                    progress.update(task, advance=1, description=f"Expanded URLs in {i+1}/{len(self.fetcher.bookmarks)} bookmarks")
+                except Exception as e:
+                    console.print(f"[yellow]Error expanding URLs for bookmark {i+1}: {str(e)}[/yellow]")
+                    continue
+        
+        console.print("[green]URL expansion complete![/green]")
+        
+        # Ask to save
+        if Confirm.ask("Save bookmarks with expanded URLs?"):
+            self.fetcher.save_bookmarks()
+    
     def _create_learning_path_prompt(self, bookmarks: List[Dict]) -> str:
         """Create prompt for learning path generation"""
         content = "\n\n".join([
@@ -646,12 +681,13 @@ Create a prioritized list of action items with:
             console.print("4. Export bookmarks to Markdown")
             console.print("5. [yellow]Analyze bookmark topics[/yellow]")
             console.print("6. [green]Smart processing (by topic)[/green]")
-            console.print("7. Configure LLM provider")
-            console.print("8. Reset pagination (start from first bookmarks)")
-            console.print("9. Unbookmark saved tweets (free up space)")
-            console.print("10. Exit")
+            console.print("7. [cyan]Expand URLs in loaded bookmarks[/cyan]")
+            console.print("8. Configure LLM provider")
+            console.print("9. Reset pagination (start from first bookmarks)")
+            console.print("10. Unbookmark saved tweets (free up space)")
+            console.print("11. Exit")
             
-            choice = Prompt.ask("\nEnter your choice", choices=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'])
+            choice = Prompt.ask("\nEnter your choice", choices=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'])
             
             if choice == '1':
                 console.print("\n[yellow]Note: Free tier allows 1 request per 15 minutes[/yellow]")
@@ -701,12 +737,19 @@ Create a prioritized list of action items with:
                     self.smart_process_bookmarks()
                     
             elif choice == '7':
+                # Expand URLs in loaded bookmarks
+                if not self.fetcher.bookmarks:
+                    console.print("[yellow]No bookmarks loaded. Please fetch or load bookmarks first.[/yellow]")
+                else:
+                    self.expand_bookmark_urls()
+                    
+            elif choice == '8':
                 self.setup_llm()
                 
-            elif choice == '8':
+            elif choice == '9':
                 self.fetcher.reset_pagination()
                 
-            elif choice == '9':
+            elif choice == '10':
                 console.print("\n[bold yellow]Unbookmark Saved Tweets[/bold yellow]")
                 console.print("This will remove saved tweets from your Twitter bookmarks")
                 console.print("Rate limit: 50 unbookmarks per 15 minutes")
@@ -718,7 +761,7 @@ Create a prioritized list of action items with:
                     except ValueError:
                         console.print("[red]Invalid number[/red]")
                 
-            elif choice == '10':
+            elif choice == '11':
                 console.print("[green]Goodbye![/green]")
                 break
 

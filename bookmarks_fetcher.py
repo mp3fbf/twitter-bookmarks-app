@@ -11,6 +11,7 @@ import pandas as pd
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
+from link_expander import LinkExpander
 
 console = Console()
 
@@ -22,13 +23,15 @@ class BookmarksFetcher:
         self.auth = twitter_auth
         self.bookmarks = []
         self.pagination_file = "pagination_state.json"
+        self.link_expander = LinkExpander(timeout=10, delay=0.3)  # 0.3s delay between expansions
     
-    def fetch_bookmarks(self, max_results: int = 100) -> List[Dict]:
+    def fetch_bookmarks(self, max_results: int = 100, expand_links: bool = True) -> List[Dict]:
         """
         Fetch bookmarks from Twitter API
         
         Args:
             max_results: Maximum results per page (max 100)
+            expand_links: Whether to expand URLs in real-time
         
         Returns:
             List of bookmark dictionaries
@@ -120,6 +123,27 @@ class BookmarksFetcher:
                         console.print("[yellow]Rate limit exceeded. Please wait 15 minutes before trying again.[/yellow]")
                     break
         
+        # Expand links if requested and bookmarks were fetched
+        if expand_links and all_bookmarks:
+            console.print(f"\n[cyan]Expanding URLs in {len(all_bookmarks)} bookmarks...[/cyan]")
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                console=console
+            ) as progress:
+                task = progress.add_task("Expanding URLs...", total=len(all_bookmarks))
+                
+                for i, bookmark in enumerate(all_bookmarks):
+                    try:
+                        # Process URLs in the bookmark
+                        self.link_expander.process_bookmark_urls(bookmark)
+                        progress.update(task, advance=1, description=f"Expanded URLs in {i+1}/{len(all_bookmarks)} bookmarks")
+                    except Exception as e:
+                        console.print(f"[yellow]Error expanding URLs for bookmark {i+1}: {str(e)}[/yellow]")
+                        continue
+            
+            console.print("[green]URL expansion complete![/green]")
+        
         self.bookmarks = all_bookmarks
         if len(all_bookmarks) > 0:
             console.print(f"[green]Successfully fetched {len(all_bookmarks)} bookmarks![/green]")
@@ -201,6 +225,33 @@ class BookmarksFetcher:
                 f.write(f"## {i}. @{bookmark.get('author_username', 'Unknown')}\n")
                 f.write(f"*{bookmark.get('created_at', 'Unknown date')}*\n\n")
                 f.write(f"{bookmark.get('text', '')}\n\n")
+                
+                # Add expanded URL information
+                if bookmark.get('url_metadata'):
+                    f.write("### 📎 Links in this bookmark:\n\n")
+                    for link_data in bookmark['url_metadata']:
+                        if link_data.get('title'):
+                            f.write(f"**[{link_data['title']}]({link_data['expanded_url']})**")
+                        else:
+                            f.write(f"**[Link]({link_data['expanded_url']})**")
+                        
+                        if link_data.get('description'):
+                            f.write(f"\n> {link_data['description'][:200]}...")
+                        
+                        content_type = link_data.get('content_type', '')
+                        if content_type == 'github' and link_data.get('extra_data'):
+                            extra = link_data['extra_data']
+                            if extra.get('stars'):
+                                f.write(f"\n> ⭐ {extra['stars']} stars")
+                            if extra.get('language'):
+                                f.write(f" • 💻 {extra['language']}")
+                        elif content_type == 'youtube' and link_data.get('extra_data'):
+                            extra = link_data['extra_data']
+                            if extra.get('video_id'):
+                                f.write(f"\n> 📺 YouTube Video ID: {extra['video_id']}")
+                        
+                        f.write("\n\n")
+                
                 if bookmark.get('url'):
                     f.write(f"[View on Twitter]({bookmark['url']})\n\n")
                 f.write("---\n\n")
