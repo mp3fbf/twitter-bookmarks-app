@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+*.egg-info/
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Twitter tokens and data
+tokens.json
+bookmarks.json
+pagination_state.json
+processed_bookmarks.md
+bookmarks.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Twillot/Playwright
+extensions/
+twitter-browser-profile/
+exports/
+*.crx
+
+# Test results and cache
+concept_test_*.md
+test_results_*.md
+thread_cache.db
+*alias

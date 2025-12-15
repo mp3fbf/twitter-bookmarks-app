@@ -1,0 +1,23 @@
+# HTTP requests
+requests>=2.31.0
+
+# LLM Providers (install only what you need)
+openai>=1.0.0
+anthropic>=0.18.0
+google-generativeai>=0.3.0
+
+# Data Storage and Processing
+pandas>=2.0.0
+python-dotenv>=1.0.0
+
+# Utilities
+rich>=13.0.0  # For better CLI output
+beautifulsoup4>=4.12.0  # For parsing HTML in tweets
+lxml>=4.9.0  # For better HTML parsing
+
+# Browser Automation (for Twillot integration)
+playwright>=1.40.0  # Automated browser for rich bookmark extraction
+# After installing, run: playwright install chromium
+
+# Note: tweepy, requests-oauthlib, flask removed - Twitter API no longer used
+# See README.md for rationale
